@@ -54,6 +54,11 @@ func (d *NodeDetector) Detect(ctx context.Context, root fs.FS) (*flkr.AppProfile
 		}
 	}
 
+	// Extract project version.
+	if pkg.Version != "" {
+		profile.AppVersion = pkg.Version
+	}
+
 	// Detect framework.
 	d.detectFramework(pkg, profile)
 

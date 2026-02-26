@@ -42,6 +42,9 @@ func (d *JavaDetector) Detect(ctx context.Context, root fs.FS) (*flkr.AppProfile
 
 		pom, err := parser.ParsePomXML(root, "pom.xml")
 		if err == nil {
+			if pom.Version != "" {
+				profile.AppVersion = pom.Version
+			}
 			if v := pom.JavaVersion(); v != "" {
 				profile.Version = v
 			}

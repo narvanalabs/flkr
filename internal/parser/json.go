@@ -44,6 +44,7 @@ func ParsePackageJSON(root fs.FS, path string) (*PackageJSON, error) {
 // ComposerJSON represents a PHP composer.json file.
 type ComposerJSON struct {
 	Name    string            `json:"name"`
+	Version string            `json:"version"`
 	Require map[string]string `json:"require"`
 	Scripts map[string]any `json:"scripts"`
 	Extra   map[string]any    `json:"extra"`

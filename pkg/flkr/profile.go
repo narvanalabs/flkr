@@ -71,6 +71,7 @@ type AppProfile struct {
 	Port           int            `json:"port,omitempty"`
 	SystemDeps     []string       `json:"systemDeps,omitempty"`
 	EnvVars        []string       `json:"envVars,omitempty"`
+	AppVersion     string         `json:"appVersion,omitempty"`
 	HasLockfile    bool           `json:"hasLockfile"`
 	LockfileType   string         `json:"lockfileType,omitempty"`
 	HasVendor      bool           `json:"hasVendor,omitempty"`
@@ -127,6 +128,9 @@ func (p *AppProfile) Merge(other *AppProfile) {
 	}
 	if other.Port != 0 {
 		p.Port = other.Port
+	}
+	if other.AppVersion != "" {
+		p.AppVersion = other.AppVersion
 	}
 	if other.HasLockfile {
 		p.HasLockfile = true

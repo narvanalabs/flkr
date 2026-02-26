@@ -11,6 +11,9 @@
       inherit nixpkgs;
       src = ./.;
       ecosystem = "{{.Ecosystem}}";
+{{- with .AppVersion}}
+      appVersion = "{{.}}";
+{{- end}}
 {{- with .Version}}
       version = "{{.}}";
 {{- end}}

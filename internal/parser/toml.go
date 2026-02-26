@@ -10,6 +10,7 @@ import (
 type PyprojectTOML struct {
 	Project struct {
 		Name           string   `toml:"name"`
+		Version        string   `toml:"version"`
 		RequiresPython string   `toml:"requires-python"`
 		Dependencies   []string `toml:"dependencies"`
 	} `toml:"project"`
@@ -55,6 +56,7 @@ func ParsePyprojectTOML(root fs.FS, path string) (*PyprojectTOML, error) {
 type CargoTOML struct {
 	Package struct {
 		Name    string `toml:"name"`
+		Version string `toml:"version"`
 		Edition string `toml:"edition"`
 	} `toml:"package"`
 	Dependencies map[string]any `toml:"dependencies"`

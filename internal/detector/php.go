@@ -35,6 +35,11 @@ func (d *PHPDetector) Detect(ctx context.Context, root fs.FS) (*flkr.AppProfile,
 	// Parse composer.json for framework detection.
 	comp, err := parser.ParseComposerJSON(root, "composer.json")
 	if err == nil {
+		// Extract project version.
+		if comp.Version != "" {
+			profile.AppVersion = comp.Version
+		}
+
 		// Detect PHP version.
 		if v, ok := comp.Require["php"]; ok {
 			profile.Version = cleanVersion(v)

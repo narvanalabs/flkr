@@ -10,6 +10,7 @@ type PomXML struct {
 	XMLName    xml.Name       `xml:"project"`
 	GroupID    string         `xml:"groupId"`
 	ArtifactID string        `xml:"artifactId"`
+	Version    string         `xml:"version"`
 	Properties PomProperties  `xml:"properties"`
 	Dependencies struct {
 		Dependency []PomDependency `xml:"dependency"`

@@ -57,6 +57,9 @@ func (d *PythonDetector) Detect(ctx context.Context, root fs.FS) (*flkr.AppProfi
 		pyproj, err := parser.ParsePyprojectTOML(root, "pyproject.toml")
 		if err == nil {
 			d.detectFramework(pyproj, profile)
+			if pyproj.Project.Version != "" {
+				profile.AppVersion = pyproj.Project.Version
+			}
 			if pyproj.Project.RequiresPython != "" {
 				profile.Version = cleanVersion(pyproj.Project.RequiresPython)
 			}

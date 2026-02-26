@@ -28,6 +28,7 @@ type templateData struct {
 	SystemDeps      []string
 	EnvVars         []string
 	TemplateVersion string
+	AppVersion      string
 	VendorHash      string // Nix expression: "null" for vendor/, or quoted hash string
 }
 
@@ -61,6 +62,7 @@ func newTemplateData(profile *flkr.AppProfile, templateVersion string) templateD
 		Port:            profile.Port,
 		SystemDeps:      profile.SystemDeps,
 		EnvVars:         profile.EnvVars,
+		AppVersion:      profile.AppVersion,
 		TemplateVersion: templateVersion,
 		VendorHash:      vendorHash,
 	}

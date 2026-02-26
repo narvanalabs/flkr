@@ -3,10 +3,22 @@ package detector
 import (
 	"context"
 	"io/fs"
+	"regexp"
 	"strings"
 
 	"github.com/narvanalabs/flkr/pkg/flkr"
 )
+
+var mixVersionRe = regexp.MustCompile(`version:\s*"([^"]+)"`)
+
+// extractMixVersion extracts the version from a mix.exs project definition.
+func extractMixVersion(content string) string {
+	m := mixVersionRe.FindStringSubmatch(content)
+	if len(m) >= 2 {
+		return m[1]
+	}
+	return ""
+}
 
 // ElixirDetector detects Elixir applications.
 type ElixirDetector struct{}
@@ -39,8 +51,13 @@ func (d *ElixirDetector) Detect(ctx context.Context, root fs.FS) (*flkr.AppProfi
 		profile.Version = strings.TrimSpace(ver)
 	}
 
-	// Detect Phoenix from mix.exs deps.
+	// Extract project version from mix.exs.
 	mixExs := readFileString(root, "mix.exs")
+	if v := extractMixVersion(mixExs); v != "" {
+		profile.AppVersion = v
+	}
+
+	// Detect Phoenix from mix.exs deps.
 	if strings.Contains(mixExs, ":phoenix") {
 		profile.Framework = flkr.FrameworkPhoenix
 		profile.Confidence = 0.9

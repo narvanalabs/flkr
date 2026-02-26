@@ -37,6 +37,9 @@ func (d *RustDetector) Detect(ctx context.Context, root fs.FS) (*flkr.AppProfile
 	// Parse Cargo.toml for edition and deps.
 	cargo, err := parser.ParseCargoTOML(root, "Cargo.toml")
 	if err == nil {
+		if cargo.Package.Version != "" {
+			profile.AppVersion = cargo.Package.Version
+		}
 		if cargo.Package.Edition != "" {
 			profile.Version = cargo.Package.Edition
 		}
