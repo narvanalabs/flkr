@@ -28,6 +28,7 @@ type templateData struct {
 	SystemDeps      []string
 	EnvVars         []string
 	TemplateVersion string
+	VendorHash      string // Nix expression: "null" for vendor/, or quoted hash string
 }
 
 // newTemplateData converts an AppProfile into template data.
@@ -35,6 +36,17 @@ func newTemplateData(profile *flkr.AppProfile, templateVersion string) templateD
 	name := string(profile.Language)
 	if profile.Framework != "" {
 		name = string(profile.Framework)
+	}
+
+	// For Go projects, emit vendorHash.
+	// Quoted SRI hash if computed, "null" (use vendor/ dir) as fallback.
+	var vendorHash string
+	if profile.Language == flkr.LangGo {
+		if profile.VendorHash != "" {
+			vendorHash = `"` + profile.VendorHash + `"`
+		} else {
+			vendorHash = "null"
+		}
 	}
 
 	return templateData{
@@ -50,5 +62,6 @@ func newTemplateData(profile *flkr.AppProfile, templateVersion string) templateD
 		SystemDeps:      profile.SystemDeps,
 		EnvVars:         profile.EnvVars,
 		TemplateVersion: templateVersion,
+		VendorHash:      vendorHash,
 	}
 }

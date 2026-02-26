@@ -34,8 +34,8 @@ type Model struct {
 
 	reviewForm  *huh.Form
 	confirmForm *huh.Form
-	portStr     string
-	confirmed   bool
+	portStr     *string
+	confirmed   *bool
 	preview     string
 	outputPath  string
 }
@@ -45,11 +45,14 @@ func New(path, templateVersion string) Model {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 
+	confirmed := false
+
 	return Model{
 		path:            path,
 		templateVersion: templateVersion,
 		step:            stepDetect,
 		spinner:         s,
+		confirmed:       &confirmed,
 	}
 }
 
@@ -108,7 +111,7 @@ func (m Model) View() string {
 		return s
 
 	case stepDone:
-		if m.confirmed {
+		if m.confirmed != nil && *m.confirmed {
 			return header + successStyle.Render(fmt.Sprintf("  Wrote %s", m.outputPath)) + "\n\n"
 		}
 		return header + dimStyle.Render("  Cancelled.") + "\n\n"
@@ -131,8 +134,9 @@ func (m Model) updateDetect(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		m.profile = msg.profile
-		m.portStr = strconv.Itoa(m.profile.Port)
-		m.reviewForm = buildReviewForm(m.profile)
+		portStr := strconv.Itoa(m.profile.Port)
+		m.portStr = &portStr
+		m.reviewForm = buildReviewForm(m.profile, m.portStr)
 		m.step = stepReview
 		return m, m.reviewForm.Init()
 
@@ -150,7 +154,7 @@ func (m Model) updateReview(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.reviewForm.State == huh.StateCompleted {
-		applyFormValues(m.profile, m.portStr)
+		applyFormValues(m.profile, *m.portStr)
 
 		preview, err := generatePreview(m.profile, m.templateVersion)
 		if err != nil {
@@ -159,7 +163,7 @@ func (m Model) updateReview(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		m.preview = preview
-		m.confirmForm = buildConfirmForm(&m.confirmed)
+		m.confirmForm = buildConfirmForm(m.confirmed)
 		m.step = stepConfirm
 		return m, m.confirmForm.Init()
 	}
@@ -179,7 +183,7 @@ func (m Model) updateConfirm(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.confirmForm.State == huh.StateCompleted {
-		if m.confirmed {
+		if *m.confirmed {
 			m.outputPath = filepath.Join(m.path, "flake.nix")
 			gen := &generator.DefaultGenerator{}
 			_, err := gen.Generate(m.profile, generator.Options{

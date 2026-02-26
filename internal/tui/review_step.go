@@ -9,9 +9,7 @@ import (
 )
 
 // buildReviewForm creates a huh form for reviewing/editing the detected profile.
-func buildReviewForm(profile *flkr.AppProfile) *huh.Form {
-	portStr := strconv.Itoa(profile.Port)
-
+func buildReviewForm(profile *flkr.AppProfile, portStr *string) *huh.Form {
 	return huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
@@ -42,7 +40,7 @@ func buildReviewForm(profile *flkr.AppProfile) *huh.Form {
 
 			huh.NewInput().
 				Title("Port").
-				Value(&portStr).
+				Value(portStr).
 				Validate(func(s string) error {
 					if s == "" {
 						return nil

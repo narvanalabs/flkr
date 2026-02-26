@@ -73,6 +73,8 @@ type AppProfile struct {
 	EnvVars        []string       `json:"envVars,omitempty"`
 	HasLockfile    bool           `json:"hasLockfile"`
 	LockfileType   string         `json:"lockfileType,omitempty"`
+	HasVendor      bool           `json:"hasVendor,omitempty"`
+	VendorHash     string         `json:"vendorHash,omitempty"`
 	Confidence     float64        `json:"confidence"`
 	DetectedBy     string         `json:"detectedBy,omitempty"`
 }

@@ -34,10 +34,21 @@ func (d *GoDetector) Detect(ctx context.Context, root fs.FS) (*flkr.AppProfile, 
 		profile.LockfileType = "gomod"
 	}
 
-	// Parse go.mod for Go version and framework detection.
+	if fileExists(root, "vendor") {
+		profile.HasVendor = true
+	}
+
+	// Parse go.mod for module name, Go version, and framework detection.
 	content := readFileString(root, "go.mod")
 	for _, line := range strings.Split(content, "\n") {
 		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "module ") {
+			modulePath := strings.TrimPrefix(line, "module ")
+			parts := strings.Split(modulePath, "/")
+			binName := parts[len(parts)-1]
+			profile.BuildCommand = "go build -o " + binName + " ."
+			profile.StartCommand = "./" + binName
+		}
 		if strings.HasPrefix(line, "go ") {
 			profile.Version = strings.TrimPrefix(line, "go ")
 		}

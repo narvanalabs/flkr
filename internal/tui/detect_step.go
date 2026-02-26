@@ -3,10 +3,12 @@ package tui
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/narvanalabs/flkr/internal/detector"
+	"github.com/narvanalabs/flkr/internal/nixhash"
 	"github.com/narvanalabs/flkr/pkg/flkr"
 )
 
@@ -21,6 +23,12 @@ func runDetection(path string) tea.Cmd {
 	return func() tea.Msg {
 		reg := detector.NewRegistry()
 		profile, err := reg.DetectFromPath(context.Background(), path)
+		if err == nil && profile != nil && profile.Language == flkr.LangGo && !profile.HasVendor {
+			absPath, _ := filepath.Abs(path)
+			if hash, hashErr := nixhash.GoVendorHash(absPath); hashErr == nil {
+				profile.VendorHash = hash
+			}
+		}
 		return detectResultMsg{profile: profile, err: err}
 	}
 }

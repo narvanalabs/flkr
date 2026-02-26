@@ -8,6 +8,8 @@ import (
 
 	"github.com/narvanalabs/flkr/internal/detector"
 	"github.com/narvanalabs/flkr/internal/generator"
+	"github.com/narvanalabs/flkr/internal/nixhash"
+	"github.com/narvanalabs/flkr/pkg/flkr"
 	"github.com/spf13/cobra"
 )
 
@@ -35,6 +37,16 @@ var generateCmd = &cobra.Command{
 		if profile == nil {
 			fmt.Fprintln(os.Stderr, "no application stack detected")
 			os.Exit(1)
+		}
+
+		// Compute vendorHash for Go projects.
+		if profile.Language == flkr.LangGo && !profile.HasVendor {
+			absPath, _ := filepath.Abs(path)
+			if hash, err := nixhash.GoVendorHash(absPath); err == nil {
+				profile.VendorHash = hash
+			} else if verbose {
+				fmt.Fprintf(os.Stderr, "warning: could not compute vendorHash: %v\n", err)
+			}
 		}
 
 		out := outputPath

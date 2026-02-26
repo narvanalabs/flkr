@@ -32,6 +32,9 @@
 {{- if .Port}}
       port = {{.Port}};
 {{- end}}
+{{- with .VendorHash}}
+      vendorHash = {{.}};
+{{- end}}
 {{- if .SystemDeps}}
       systemDeps = [ {{range .SystemDeps}}"{{.}}" {{end}}];
 {{- end}}
