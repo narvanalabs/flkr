@@ -1,0 +1,10 @@
+{
+  "name": "frontend",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev"
+  },
+  "dependencies": {
+    "vite": "5.0.0"
+  }
+}
